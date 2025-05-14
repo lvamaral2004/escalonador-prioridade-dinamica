@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simulador de Escalonamento por Prioridade Dinâmica</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Simulador de Escalonamento por Prioridade Dinâmica</h1>
+    <button id="toggleMode" class="toggle-mode">
+        <span class="label">Modo Claro</span>
+        <span class="label">Modo Escuro</span>
+    </button>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="simulator">Simulador</button>
+    <button class="tab" data-tab="about">Sobre</button>
+    <button class="tab" data-tab="help">Ajuda</button>
+  </nav>
+
+  <main>
+    <section id="simulator" class="tab-content active">
+      <div class="controls">
+        <form id="processForm">
+          <input type="text" id="taskName" placeholder="Nome do Processo" required />
+          <select id="processType" required>
+            <option value="">Tipo de Processo</option>
+            <option value="cpu">CPU-bound</option>
+            <option value="io">I/O-bound</option>
+            <option value="interactive">Interativo</option>
+          </select>
+          <input type="number" id="priority" placeholder="Prioridade (1-10)" min="1" max="10" required />
+          <input type="number" id="executionTime" placeholder="Tempo de Execução (ms)" min="100" step="100" required />
+          <button type="submit">Adicionar Processo</button>
+        </form>
+        <div class="buttons">
+          <button id="startBtn">Iniciar</button>
+          <button id="pauseBtn">Pausar</button>
+          <button id="resetBtn">Resetar</button>
+        </div>
+        <div class="simulation-controls">
+          <label for="timeQuantum">Quantum (ms):</label>
+          <input type="number" id="timeQuantum" value="500" min="100" step="100">
+          <label for="agingFactor">Fator de Aging:</label>
+          <input type="number" id="agingFactor" value="5" min="1" max="10">
+        </div>
+      </div>
+
+      <div class="queues-and-chart">
+        <div class="queues">
+          <div class="queue" id="readyQueue">
+            <h2>Pronto <span class="count">0</span></h2>
+            <div class="process-list"></div>
+          </div>
+          <div class="queue" id="waitingQueue">
+            <h2>Espera <span class="count">0</span></h2>
+            <div class="process-list"></div>
+          </div>
+          <div class="queue" id="executionQueue">
+            <h2>Execução <span class="count">0</span></h2>
+            <div class="process-list"></div>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="stateChart"></canvas>
+        </div>
+      </div>
+
+      <div class="metrics-and-transitions">
+        <div class="metrics">
+          <div class="metric">
+            <p>Processos Concluídos:</p>
+            <span id="completedTasks">0</span>
+          </div>
+          <div class="metric">
+            <p>Tempo Médio de Espera:</p>
+            <span id="avgWaitingTime">0</span> ms
+          </div>
+          <div class="metric">
+            <p>Throughput:</p>
+            <span id="throughput">0.00</span> processos/s
+          </div>
+          <div class="metric">
+            <p>Tempo de Simulação:</p>
+            <span id="simulationTime">0</span> ms
+          </div>
+        </div>
+
+        <div class="process-states">
+          <h2>Transições de Estado</h2>
+          <div class="state-transitions" id="stateTransitions"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="tab-content">
+      <div class="info-card">
+        <h2>Sobre o Simulador</h2>
+        <p>Este simulador foi desenvolvido para demonstrar visualmente como funciona um escalonador de processos com prioridade dinâmica em sistemas operacionais.</p>
+        
+        <h3>Quem somos</h3>
+        <p>Somos um grupo de entusiastas de sistemas operacionais e desenvolvimento web, comprometidos em criar ferramentas educacionais interativas.</p>
+        
+        <h3>Objetivo</h3>
+        <p>Nosso objetivo é facilitar o entendimento de conceitos complexos de escalonamento de processos através de visualizações interativas e intuitivas.</p>
+        
+        <h3>Tecnologias utilizadas</h3>
+        <ul>
+          <li>HTML5, CSS3 e JavaScript</li>
+          <li>Chart.js para visualização de dados</li>
+          <li>Algoritmos de escalonamento realistas</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="help" class="tab-content">
+      <div class="info-card">
+        <h2>Ajuda e Suporte</h2>
+        
+        <h3>Como usar o simulador</h3>
+        <ol>
+          <li><strong>Adicione processos:</strong> Preencha o formulário com nome, tipo, prioridade e tempo de execução.</li>
+          <li><strong>Ajuste os parâmetros:</strong> Defina o quantum e fator de aging conforme necessário.</li>
+          <li><strong>Inicie a simulação:</strong> Clique no botão "Iniciar" para começar a execução.</li>
+          <li><strong>Observe as transições:</strong> Os processos mudarão entre os estados Pronto, Execução e Espera.</li>
+          <li><strong>Analise os resultados:</strong> Veja as métricas e o gráfico para entender o comportamento do escalonador.</li>
+        </ol>
+        
+        <h3>Conceitos explicados</h3>
+        <div class="concept">
+          <h4>Prioridade Dinâmica</h4>
+          <p>A prioridade dos processos muda durante a execução baseada em fatores como tempo de espera e uso de CPU.</p>
+        </div>
+        
+        <div class="concept">
+          <h4>Aging</h4>
+          <p>Processos que esperam muito tempo têm sua prioridade aumentada para evitar starvation (inanição).</p>
+        </div>
+        
+        <div class="concept">
+          <h4>Tipos de Processos</h4>
+          <ul>
+            <li><strong>CPU-bound:</strong> Usam muita CPU, prioridade tende a diminuir</li>
+            <li><strong>I/O-bound:</strong> Fazem muitas operações de I/O, prioridade moderada</li>
+            <li><strong>Interativos:</strong> Ganham prioridade rapidamente para melhor responsividade</li>
+          </ul>
+        </div>
+        
+        <h3>Suporte</h3>
+        <p>Para dúvidas ou sugestões, entre em contato conosco através do email: suporte@simuladores.com.br</p>
+      </div>
+    </section>
+  </main>
+
+  <div id="priorityModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Alterar Prioridade</h2>
+      <div class="modal-body">
+        <label for="newPriority">Nova Prioridade (1-10):</label>
+        <input type="number" id="newPriority" min="1" max="10" value="5">
+        <button id="applyPriority">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
