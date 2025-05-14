@@ -1,16 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 :root {
-    --bg-color: #efeae6;
+    --bg-color: #ffffff;
     --text-color: #000000;
-    --accent-color: #0c2c47;
+    --accent-color: #0F2C47;
     --queue-bg: #f0f0f0;
-    --ready-color: #185b5a;
-    --waiting-color: #912418;
-    --execution-color: #f49a28;
-    --completed-color: #9b59b6;
+    --ready-color: #FFBB00;
+    --waiting-color: #15AF8D;
+    --execution-color: #0248C1;
     --transition-speed: 0.3s;
-    --tab-active: #3498db;
+    --tab-active:  #0F2C47;
     --tab-inactive: #bdc3c7;
     --modal-bg: rgba(0, 0, 0, 0.5);
   }
@@ -18,12 +17,10 @@
   body.dark-mode {
     --bg-color: #121212;
     --text-color: #ffffff;
+    --accent-color: #2b57a7;
     --queue-bg: #1e1e1e;
-    --ready-color: #27ae60;
-    --waiting-color: #c0392b;
-    --execution-color: #d35400;
-    --completed-color: #8e44ad;
-    --tab-active: #9b59b6;
+    --execution-color: #ff7300;
+    --tab-active:  #2b57a7;
     --tab-inactive: #7f8c8d;
   }
   

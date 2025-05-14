@@ -145,7 +145,7 @@ class Process {
         this.stateChart = new Chart(ctx, {
           type: 'line',
           data: {
-            datasets: [] // Inicialmente vazio, será preenchido dinamicamente
+            datasets: [] 
           },
           options: {
             responsive: true,
