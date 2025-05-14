@@ -34,13 +34,14 @@
             <option value="interactive">Interativo</option>
           </select>
           <input type="number" id="priority" placeholder="Prioridade (1-10)" min="1" max="10" required />
-          <input type="number" id="executionTime" placeholder="Tempo de Execução (ms)" min="100" step="100" required />
+          <input type="number" id="executionTime" placeholder="Tempo de Execução (ms)" min="100" max="600000" required />
           <button type="submit">Adicionar Processo</button>
         </form>
         <div class="buttons">
           <button id="startBtn">Iniciar</button>
           <button id="pauseBtn">Pausar</button>
           <button id="resetBtn">Resetar</button>
+          <button id="downloadBtnPdf" style="display: none;" onclick="downloadReport()">Baixar Relatório</button>
         </div>
         <div class="simulation-controls">
           <label for="timeQuantum">Quantum (ms):</label>
@@ -71,7 +72,7 @@
         </div>
       </div>
 
-      <div class="metrics-and-transitions">
+      <div class="metrics-and-transitions" id="reportContent">
         <div class="metrics">
           <div class="metric">
             <p>Processos Concluídos:</p>
@@ -102,10 +103,10 @@
       <div class="info-card">
         <h2>Sobre o Simulador</h2>
         <p>Este simulador foi desenvolvido para demonstrar visualmente como funciona um escalonador de processos com prioridade dinâmica em sistemas operacionais.</p>
-        
+<!--         
         <h3>Quem somos</h3>
         <p>Somos um grupo de entusiastas de sistemas operacionais e desenvolvimento web, comprometidos em criar ferramentas educacionais interativas.</p>
-        
+         -->
         <h3>Objetivo</h3>
         <p>Nosso objetivo é facilitar o entendimento de conceitos complexos de escalonamento de processos através de visualizações interativas e intuitivas.</p>
         
@@ -113,6 +114,7 @@
         <ul>
           <li>HTML5, CSS3 e JavaScript</li>
           <li>Chart.js para visualização de dados</li>
+          <li>html2pdf.js para a geração do PDF</li>
           <li>Algoritmos de escalonamento realistas</li>
         </ul>
       </div>
@@ -171,5 +173,50 @@
   </div>
 
   <script src="script.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    async function downloadReport() {
+      const chartCanvas = document.getElementById('stateChart');
+      const reportContent = document.getElementById('reportContent');
+
+      // 1. Criar uma imagem do gráfico
+      const chartImage = chartCanvas.toDataURL('image/png');
+
+      // 2. Criar elemento temporário contendo o conteúdo para o PDF
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.padding = '20px';
+      pdfContainer.style.fontFamily = 'Arial, sans-serif';
+
+      const title = document.createElement('h1');
+      title.textContent = 'Relatório da execução';
+      title.style.textAlign = 'center';
+      title.style.marginBottom = '20px';
+      pdfContainer.appendChild(title);
+    
+      // 3. Inserir imagem no topo
+      const img = document.createElement('img');
+      img.src = chartImage;
+      img.style.width = '100%';
+      img.style.maxWidth = '600px';
+      img.style.marginBottom = '20px';
+      pdfContainer.appendChild(img);
+
+      // 4. Clonar o conteúdo do relatório para o PDF (inclusive dados finais)
+      const contentClone = reportContent.cloneNode(true);
+      pdfContainer.appendChild(contentClone);
+
+      // 5. Gerar e baixar o PDF
+      const opt = {
+        margin: 0.5,
+        filename: 'relatorio_simulacao.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(pdfContainer).save();
+    }
+  </script>
+
 </body>
 </html>

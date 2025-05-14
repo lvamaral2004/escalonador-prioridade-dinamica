@@ -388,6 +388,7 @@ class Process {
       // Verifica se todos os processos foram concluídos
       if (this.allProcesses.length > 0 && this.allProcesses.every(p => p.status === 'completed')) {
         this.pause();
+        document.getElementById('downloadBtnPdf').style.display = 'inline-block'; // Mostra o botão de download
       }
     }
   
