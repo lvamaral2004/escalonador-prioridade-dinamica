@@ -419,7 +419,11 @@
     height: 100%;
     background-color: var(--modal-bg);
   }
-  
+
+  #priorityModal {
+    z-index: 101; /* Above the mass edit modal */
+	}
+
   .modal-content {
     background-color: var(--bg-color);
     margin: 15% auto;
@@ -427,6 +431,7 @@
     border-radius: 8px;
     width: 300px;
     position: relative;
+		z-index: 1;
   }
   
   .close {
@@ -457,6 +462,30 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+  .process-edit-list {
+		max-height: 400px;
+		overflow-y: auto;
+		margin-bottom: 15px;
+	}
+
+	.process-edit-item {
+		padding: 10px;
+		border-bottom: 1px solid #eee;
+		cursor: pointer;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.process-edit-item:hover {
+		background-color: #f5f5f5;
+	}
+
+	.modal-footer {
+		margin-top: 20px;
+		text-align: right;
+	}
   
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }

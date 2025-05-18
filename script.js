@@ -1,7 +1,7 @@
 class Process {
     constructor(name, type, priority, executionTime, currentTime) {
       this.name = name;
-      this.type = type; // 'cpu', 'io'
+      this.type = type; // 'cpu' ou 'io'
       this.originalPriority = parseInt(priority);
       this.dynamicPriority = parseInt(priority);
       this.executionTime = parseInt(executionTime);
@@ -17,9 +17,10 @@ class Process {
       this.nextIoTime = this.type === 'io' ? this.ioInterval : Infinity;
       this.totalCpuTime = 0;
       this.stateHistory = [];
-      this.recordState('Criado', currentTime); // Registra transição de estado
+      this.recordState('Criado', currentTime); // Registra estado inicial
     }
-  
+
+    // Registra mudança de estado com timestamp
     recordState(newState, time) {
       if (this.stateHistory.length > 0 && time <= this.stateHistory[this.stateHistory.length-1].time) {
         time = this.stateHistory[this.stateHistory.length-1].time + 1;
@@ -33,9 +34,12 @@ class Process {
       this.status = newState;
       this.lastStateChangeTime = time;
     }
-  
+    
+    // Atualiza prioridade dinâmica considerando:
+    // - Tempo de espera (aging)
+    // - Tipo de processo (I/O-bound ganha prioridade)
+    // - Uso excessivo de CPU (CPU-bound perde prioridade)
     updateDynamicPriority(currentTime, agingFactor) {
-      // Aumenta prioridade com base no tempo de espera (aging)
       const waitTime = currentTime - this.lastRunTime;
       let priorityChange = Math.floor(waitTime / (1000 / agingFactor));
       
@@ -44,7 +48,7 @@ class Process {
         priorityChange += 1; // Processos I/O-bound ganham prioridade moderada
       }
       
-      // Processos CPU-bound perdem prioridade se usaram muito CPU
+      // Processos CPU-bound perdem prioridade se usarem muito tempo de CPU
       if (this.type === 'cpu' && this.totalCpuTime > 2000) {
         priorityChange -= Math.floor(this.totalCpuTime / 1000);
       }
@@ -53,6 +57,10 @@ class Process {
       this.dynamicPriority = Math.max(1, Math.min(10, this.originalPriority + priorityChange));
     }
   
+    // Executa o processo por um time slice e retorna:
+    // 'io' - se precisa fazer operação de I/O
+    // 'completed' - se terminou
+    // 'running' - se ainda precisa executar
     execute(timeSlice) {
       const actualSlice = Math.min(timeSlice, this.remainingTime, this.nextIoTime);
       this.remainingTime -= actualSlice;
@@ -73,31 +81,32 @@ class Process {
   
   class DynamicPriorityScheduler {
     constructor() {
+      // Filas de processos
       this.readyQueue = [];
       this.waitingQueue = [];
       this.executionQueue = [];
+
+      // Lista completa e controle de execução
       this.allProcesses = [];
       this.running = false;
       this.interval = null;
+
+      // Métricas e configurações
       this.currentTime = 0;
       this.completedTasks = 0;
       this.totalWaitingTime = 0;
       this.startTime = null;
       this.timeQuantum = 500;
       this.agingFactor = 5;
+      
+      // Visualização
       this.stateTransitions = [];
       this.stateChart = null;
       this.selectedProcess = null;
-      this.baseTickInterval = 500; // Base speed (500ms per tick)
+      this.baseTickInterval = 500; // Velocidade base (500ms por tick)
       this.speed = 1;
       this.nextTickTime = 0;
 
-      // Mapa de cores para processos repetidos
-      this.processColors = {
-        'cpu': ['#e74c3c', '#c0392b', '#d35400', '#e67e22'], // Tons de vermelho/laranja
-        'io': ['#3498db', '#2980b9', '#1abc9c', '#16a085']   // Tons de azul/verde-água
-      };
-      
       // Mapa para rastrear cores usadas por processo
       this.assignedColors = {};
   
@@ -115,6 +124,16 @@ class Process {
         document.querySelectorAll('#speedSelect option').forEach(opt => {
           opt.selected = opt.value === e.target.value;
         });
+      });
+
+      document.getElementById('massEditBtn').addEventListener('click', () => this.openMassEditModal());
+        document.getElementById('saveAllPriorities').addEventListener('click', () => this.saveAllPriorities());
+        
+        // Modify existing priority modal close handler
+        document.querySelectorAll('.modal .close').forEach(closeBtn => {
+          closeBtn.addEventListener('click', () => {
+            closeBtn.closest('.modal').style.display = 'none';
+          });
       });
   
       document.getElementById('startBtn').addEventListener('click', () => this.start());
@@ -146,15 +165,25 @@ class Process {
         document.getElementById('priorityModal').style.display = 'none';
       });
   
+      // document.getElementById('applyPriority').addEventListener('click', () => {
+      //   const newPriority = parseInt(document.getElementById('newPriority').value);
+      //   if (this.selectedProcess && newPriority >= 1 && newPriority <= 10) {
+      //     this.selectedProcess.originalPriority = newPriority;
+      //     this.selectedProcess.dynamicPriority = newPriority;
+      //     this.updateUI();
+      //   }
+      //   document.getElementById('priorityModal').style.display = 'none';
+      // });
+
       document.getElementById('applyPriority').addEventListener('click', () => {
         const newPriority = parseInt(document.getElementById('newPriority').value);
         if (this.selectedProcess && newPriority >= 1 && newPriority <= 10) {
-          this.selectedProcess.originalPriority = newPriority;
-          this.selectedProcess.dynamicPriority = newPriority;
-          this.updateUI();
+            this.selectedProcess.originalPriority = newPriority;
+            this.selectedProcess.dynamicPriority = newPriority;
+            this.updateUI();
         }
         document.getElementById('priorityModal').style.display = 'none';
-      });
+    });
   
       // Initialize chart
       this.initChart();
@@ -341,7 +370,8 @@ class Process {
         
         return color;
     }
-  
+    
+    // Obtém as mudanças de estado de um processo para o gráfico
     getProcessStateChanges(process) {
       if (!process.stateHistory || process.stateHistory.length === 0) return [];
       
@@ -354,7 +384,7 @@ class Process {
       
       const points = [];
       
-      // Add initial point if needed
+      // Adiciona ponto inicial se necessário
       if (process.stateHistory[0].time > 0) {
         points.push({
           x: 0,
@@ -362,7 +392,7 @@ class Process {
         });
       }
       
-      // Add all state changes
+      // Adiciona todas as mudanças de estado
       for (const state of process.stateHistory) {
         points.push({
           x: state.time,
@@ -370,7 +400,7 @@ class Process {
         });
       }
       
-      // Add current state if not completed
+      // Adiciona estado atual se não estiver concluído
       if (process.status !== 'completed') {
         points.push({
           x: this.currentTime,
@@ -380,7 +410,8 @@ class Process {
       
       return points;
     }
-  
+    
+    // Cria um novo processo a partir dos dados do formulário
     createProcess() {
       const name = document.getElementById('taskName').value;
       const type = document.getElementById('processType').value;
@@ -401,16 +432,18 @@ class Process {
     start() {
       if (!this.running) {
         this.running = true;
-        this.nextTickTime = Date.now(); // Reset timing on start
+        this.nextTickTime = Date.now(); // Reinicia o tempo ao iniciar
         this.scheduleTick();
       }
     }
-  
+    
+    // Pausa a simulação
     pause() {
       this.running = false;
       clearTimeout(this.interval);
     }
-  
+    
+    // Reinicia toda a simulação
     reset() {
       this.pause();
       this.readyQueue = [];
@@ -422,20 +455,21 @@ class Process {
       this.completedTasks = 0;
       this.totalWaitingTime = 0;
       this.stateTransitions = [];
+      this.speed = 1;
       this.updateUI();
       this.updateChart();
     }
-  
+    
+    // Agenda o próximo tick da simulação
     scheduleTick() {
       if (!this.running) return;
       
-      // Ajusta a velocidade da simulação baseado no número de processos
-      clearTimeout(this.interval); // Always clear previous timeout
+      clearTimeout(this.interval); // Limpa timeout anterior
         
       const now = Date.now();
       const adjustedInterval = this.baseTickInterval / this.speed;
       
-      // Calculate when the next tick should happen
+      // Calcula quando o próximo tick deve acontecer
       this.nextTickTime = Math.max(now, (this.nextTickTime || now) + adjustedInterval);
       
       const delay = Math.max(0, this.nextTickTime - now);
@@ -445,7 +479,8 @@ class Process {
           this.scheduleTick();
       }, delay);
     }
-  
+
+    // Executa um ciclo da simulação
     tick() {
       if (!this.running) return;
   
@@ -460,7 +495,7 @@ class Process {
       // Verifica processos em espera (I/O)
       this.checkWaitingProcesses();
   
-      // Se não há processo em execução, escolhe o próximo
+      // Escolhe próximo processo se não houver em execução
       if (this.executionQueue.length === 0 && this.readyQueue.length > 0) {
         this.scheduleNextProcess();
       }
@@ -478,6 +513,7 @@ class Process {
       }
     }
   
+    // Verifica processos em espera por I/O
     checkWaitingProcesses() {
       const completedIo = [];
       
@@ -498,7 +534,8 @@ class Process {
         this.waitingQueue.splice(index, 1);
       });
     }
-  
+    
+    // Agenda o próximo processo para execução
     scheduleNextProcess() {
       // Ordena por prioridade dinâmica (maior primeiro)
       this.readyQueue.sort((a, b) => {
@@ -519,6 +556,7 @@ class Process {
       }
     }
   
+    // Executa o processo atual
     executeCurrentProcess() {
       if (this.executionQueue.length === 0) return;
   
@@ -534,8 +572,6 @@ class Process {
         this.logStateTransition(currentProcess, 'running', 'waiting');
       } else if (result === 'completed') {
         // Processo concluído
-        
-        // Add this line to ensure the running->completed transition is captured:
         currentProcess.recordState('running', this.currentTime - 1); 
         currentProcess.recordState('completed', this.currentTime);
         this.completedTasks++;
@@ -552,6 +588,7 @@ class Process {
       }
     }
   
+    // Registra uma transição de estado
     logStateTransition(process, fromState, toState) {
       const stateMap = {
         'ready': 'Pronto',
@@ -576,6 +613,7 @@ class Process {
       }
     }
   
+    // Atualiza a exibição de uma fila de processos
     updateQueueDisplay(id, queue) {
       const container = document.querySelector(`#${id} .process-list`);
       const countElement = document.querySelector(`#${id} .count`);
@@ -584,32 +622,36 @@ class Process {
       container.innerHTML = '';
       
       queue.forEach(p => {
-        const div = document.createElement('div');
-        div.className = `process-item ${p.status}`;
-        
-        const progressPercent = ((p.executionTime - p.remainingTime) / p.executionTime) * 100;
-        
-        div.innerHTML = `
-          <div class="process-info">
-            <strong>${p.name}</strong> (${this.getProcessTypeName(p.type)})
-            <div class="process-details">
-              P: ${p.dynamicPriority} (orig ${p.originalPriority}) | 
-              R: ${p.remainingTime}ms
-            </div>
-          </div>
-          <div class="progress" style="width: ${progressPercent}%"></div>
-        `;
-        
-        div.addEventListener('click', () => {
-          this.selectedProcess = p;
-          document.getElementById('newPriority').value = p.originalPriority;
-          document.getElementById('priorityModal').style.display = 'block';
-        });
-        
-        container.appendChild(div);
+          const div = document.createElement('div');
+          div.className = `process-item ${p.status}`;
+          
+          const progressPercent = ((p.executionTime - p.remainingTime) / p.executionTime) * 100;
+          
+          div.innerHTML = `
+              <div class="process-info">
+                  <strong>${p.name}</strong> (${this.getProcessTypeName(p.type)})
+                  <div class="process-details">
+                      P: ${p.dynamicPriority} (orig ${p.originalPriority}) | 
+                      R: ${p.remainingTime}ms
+                  </div>
+              </div>
+              <div class="progress" style="width: ${progressPercent}%"></div>
+          `;
+          
+          div.addEventListener('click', (e) => {
+              if (e.target.tagName !== 'BUTTON') {
+                  this.pause(); 
+                  this.selectedProcess = p;
+                  document.getElementById('newPriority').value = p.originalPriority;
+                  document.getElementById('priorityModal').style.display = 'block';
+              }
+          });
+          
+          container.appendChild(div);
       });
     }
   
+    // Retorna o nome do tipo de processo
     getProcessTypeName(type) {
       const types = {
         'cpu': 'CPU-bound',
@@ -618,6 +660,7 @@ class Process {
       return types[type] || type;
     }
   
+    // Atualiza a lista de transições de estado
     updateStateTransitions() {
       const container = document.getElementById('stateTransitions');
       container.innerHTML = '';
@@ -640,6 +683,7 @@ class Process {
       });
     }
   
+    // Atualiza toda a interface do usuário
     updateUI() {
       this.updateQueueDisplay('readyQueue', this.readyQueue);
       this.updateQueueDisplay('waitingQueue', this.waitingQueue);
@@ -661,6 +705,7 @@ class Process {
       this.updateStateTransitions();
     }
   
+    // Alterna entre modo claro e escuro
     toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
         // Atualiza o gráfico quando o modo escuro é alternado
@@ -669,8 +714,44 @@ class Process {
         }
       }
 
+    // Define a velocidade da simulação
     setSpeed(speed) {
         this.speed = parseFloat(speed);
+    }
+
+    // Abre o modal para edição em massa
+    openMassEditModal() {
+        this.pause(); // Pausa a simulação ao abrir o modal
+        
+        const modal = document.getElementById('massPriorityModal');
+        const processList = document.getElementById('processListForEdit');
+        processList.innerHTML = '';
+        
+        // Adiciona todos os processos ao modal
+        this.allProcesses.forEach(process => {
+            const item = document.createElement('div');
+            item.className = 'process-edit-item';
+            item.innerHTML = `
+                <span>${process.name} (Prioridade atual: ${process.originalPriority})</span>
+                <span class="edit-icon"><i class="bi bi-pencil"></i></span>
+            `;
+            
+            item.addEventListener('click', () => {
+                this.selectedProcess = process;
+                document.getElementById('newPriority').value = process.originalPriority;
+                document.getElementById('priorityModal').style.display = 'block';
+            });
+            
+            processList.appendChild(item);
+        });
+        
+        modal.style.display = 'block';
+    }
+
+    // Salva todas as prioridades após edição em massa
+    saveAllPriorities() {
+        document.getElementById('massPriorityModal').style.display = 'none';
+        this.updateUI();
     }
   }
   

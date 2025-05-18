@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simulador de Escalonamento por Prioridade Dinâmica</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -41,6 +42,7 @@
           <button id="pauseBtn">Pausar</button>
           <button id="resetBtn">Resetar</button>
           <button id="downloadBtnPdf" style="display: none;" onclick="downloadReport()">Baixar Relatório</button>
+          <button id="massEditBtn">Editar Prioridades</button>
         </div>
         <div class="simulation-controls">
           <label for="timeQuantum">Quantum (ms):</label>
@@ -49,7 +51,7 @@
           <input type="number" id="agingFactor" value="5" min="1" max="10">
 
           <div class="speed-controls">
-              <label>Speed:</label>
+              <label>Velocidade:</label>
               <select id="speedSelect">
                   <option value="0.5">0.5x</option>
                   <option value="1" selected>1x</option>
@@ -112,10 +114,6 @@
       <div class="info-card">
         <h2>Sobre o Simulador</h2>
         <p>Este simulador foi desenvolvido para demonstrar visualmente como funciona um escalonador de processos com prioridade dinâmica em sistemas operacionais.</p>
-<!--         
-        <h3>Quem somos</h3>
-        <p>Somos um grupo de entusiastas de sistemas operacionais e desenvolvimento web, comprometidos em criar ferramentas educacionais interativas.</p>
-         -->
         <h3>Objetivo</h3>
         <p>Nosso objetivo é facilitar o entendimento de conceitos complexos de escalonamento de processos através de visualizações interativas e intuitivas.</p>
         
@@ -178,6 +176,20 @@
         <label for="newPriority">Nova Prioridade (1-10):</label>
         <input type="number" id="newPriority" min="1" max="10" value="5">
         <button id="applyPriority">Aplicar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="massPriorityModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2 style="text-align: center;">Editar Prioridades</h2>
+      <div class="modal-body">
+        <div id="processListForEdit" class="process-edit-list">
+        </div>
+        <div class="modal-footer">
+          <button id="saveAllPriorities">Continuar</button>
+        </div>
       </div>
     </div>
   </div>
