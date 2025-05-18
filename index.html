@@ -31,7 +31,6 @@
             <option value="">Tipo de Processo</option>
             <option value="cpu">CPU-bound</option>
             <option value="io">I/O-bound</option>
-            <option value="interactive">Interativo</option>
           </select>
           <input type="number" id="priority" placeholder="Prioridade (1-10)" min="1" max="10" required />
           <input type="number" id="executionTime" placeholder="Tempo de Execução (ms)" min="100" max="600000" required />
@@ -131,6 +130,7 @@
           <li><strong>Inicie a simulação:</strong> Clique no botão "Iniciar" para começar a execução.</li>
           <li><strong>Observe as transições:</strong> Os processos mudarão entre os estados Pronto, Execução e Espera.</li>
           <li><strong>Analise os resultados:</strong> Veja as métricas e o gráfico para entender o comportamento do escalonador.</li>
+          <li><strong>Relatório de dados: Caso necessite, poderá exportar para PDF as informações ao fim da execução.</strong></li>
         </ol>
         
         <h3>Conceitos explicados</h3>

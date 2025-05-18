@@ -1,7 +1,7 @@
 class Process {
     constructor(name, type, priority, executionTime, currentTime) {
       this.name = name;
-      this.type = type; // 'cpu', 'io', 'interactive'
+      this.type = type; // 'cpu', 'io'
       this.originalPriority = parseInt(priority);
       this.dynamicPriority = parseInt(priority);
       this.executionTime = parseInt(executionTime);
@@ -17,10 +17,14 @@ class Process {
       this.nextIoTime = this.type === 'io' ? this.ioInterval : Infinity;
       this.totalCpuTime = 0;
       this.stateHistory = [];
-      this.recordState('Criado', currentTime);
+      this.recordState('Criado', currentTime); // Registra transição de estado
     }
   
     recordState(newState, time) {
+      if (this.stateHistory.length > 0 && time <= this.stateHistory[this.stateHistory.length-1].time) {
+        time = this.stateHistory[this.stateHistory.length-1].time + 1;
+      }
+
       this.stateHistory.push({
         state: newState,
         time: time,
@@ -36,9 +40,7 @@ class Process {
       let priorityChange = Math.floor(waitTime / (1000 / agingFactor));
       
       // Ajusta prioridade baseado no tipo de processo
-      if (this.type === 'interactive') {
-        priorityChange += 2; // Processos interativos ganham mais prioridade
-      } else if (this.type === 'io') {
+      if (this.type === 'io') {
         priorityChange += 1; // Processos I/O-bound ganham prioridade moderada
       }
       
@@ -47,10 +49,11 @@ class Process {
         priorityChange -= Math.floor(this.totalCpuTime / 1000);
       }
       
+      // Define a nova prioridade
       this.dynamicPriority = Math.max(1, Math.min(10, this.originalPriority + priorityChange));
     }
   
-    execute(timeSlice, currentTime) {
+    execute(timeSlice) {
       const actualSlice = Math.min(timeSlice, this.remainingTime, this.nextIoTime);
       this.remainingTime -= actualSlice;
       this.totalCpuTime += actualSlice;
@@ -85,6 +88,15 @@ class Process {
       this.stateTransitions = [];
       this.stateChart = null;
       this.selectedProcess = null;
+
+      // Mapa de cores para processos repetidos
+      this.processColors = {
+        'cpu': ['#e74c3c', '#c0392b', '#d35400', '#e67e22'], // Tons de vermelho/laranja
+        'io': ['#3498db', '#2980b9', '#1abc9c', '#16a085']   // Tons de azul/verde-água
+      };
+      
+      // Mapa para rastrear cores usadas por processo
+      this.assignedColors = {};
   
       this.init();
     }
@@ -149,7 +161,10 @@ class Process {
           },
           options: {
             responsive: true,
-            maintainAspectRatio: false,
+            // maintainAspectRatio: false,
+            animation: {
+              duration: 0 // Disable animations for real-time updates
+            },
             scales: {
               y: {
                 type: 'category',
@@ -166,7 +181,7 @@ class Process {
                   display: true,
                   text: 'Tempo (ms)'
                 },
-                min: 0
+                min: 0,
               }
             },
             plugins: {
@@ -177,7 +192,7 @@ class Process {
               tooltip: {
                 callbacks: {
                   label: (context) => {
-                    return `${context.dataset.label}: ${context.parsed.y} em ${context.parsed.x}ms`;
+                    return `${context.dataset.label}: ${context.parsed.x}ms`;
                   }
                 }
               }
@@ -193,13 +208,14 @@ class Process {
         const stateLevels = {
           'ready': 'Pronto',
           'running': 'Execução',
-          'waiting': 'Espera'
+          'waiting': 'Espera',
+          'completed': 'Concluído',
         };
       
         this.allProcesses.forEach(process => {
           // Filtra apenas os estados relevantes e ordena por tempo
           const relevantStates = process.stateHistory
-            .filter(state => ['ready', 'running', 'waiting'].includes(state.state))
+            .filter(state => ['ready', 'running', 'waiting', 'completed'].includes(state.state))
             .sort((a, b) => a.time - b.time);
       
           if (relevantStates.length === 0) return;
@@ -207,7 +223,11 @@ class Process {
           const dataPoints = [];
           let lastTime = 0;
           let lastState = 'ready'; // Estado inicial padrão
-      
+
+          if (relevantStates[0].time > 0) {
+            dataPoints.push({ x: 0, y: stateLevels['ready'] });
+          }
+
           // Adiciona ponto inicial (assume que começa em pronto no tempo 0)
           dataPoints.push({
             x: 0,
@@ -233,7 +253,13 @@ class Process {
           });
       
           // Adiciona o estado atual até o tempo corrente (se não estiver completado)
-          if (process.status !== 'completed') {
+          if (process.status === 'completed') {
+            dataPoints.push({
+              x: lastTime,
+              y: stateLevels['completed']
+            });
+          } 
+          else {
             dataPoints.push({
               x: this.currentTime,
               y: stateLevels[process.status]
@@ -256,14 +282,55 @@ class Process {
         this.stateChart.update();
       }
       
-      getProcessColor(process) {
-        switch (process.type) {
-          case 'cpu': return '#e74c3c'; // Vermelho para CPU-bound
-          case 'io': return '#3498db';  // Azul para I/O-bound
-          case 'interactive': return '#2ecc71'; // Verde para interativo
-          default: return '#9b59b6';
+      // getProcessColor(process) {
+      //   // Se já tiver uma cor atribuída, retorna ela
+      //   if (this.assignedColors[process.name]) {
+      //     return this.assignedColors[process.name];
+      //   }
+        
+      //   // Conta quantos processos do mesmo tipo já existem
+      //   const sameTypeCount = this.allProcesses
+      //     .filter(p => p.type === process.type).length;
+        
+      //   // Seleciona uma cor baseada no tipo e na quantidade
+      //   const colorPalette = this.processColors[process.type] || ['#9b59b6'];
+      //   const colorIndex = sameTypeCount % colorPalette.length;
+        
+      //   // Armazena a cor atribuída
+      //   this.assignedColors[process.name] = colorPalette[colorIndex];
+        
+      //   return this.assignedColors[process.name];
+      // }
+
+    getProcessColor(process) {
+        // Se já tiver uma cor atribuída, retorna ela
+        if (this.assignedColors[process.name]) {
+            return this.assignedColors[process.name];
         }
-      }
+        
+        // Gera uma cor única baseada no nome/tipo do processo
+        const hashString = process.name + process.type; // Combina nome e tipo para maior unicidade
+        let hash = 0;
+        
+        // Cria um hash simples a partir da string
+        for (let i = 0; i < hashString.length; i++) {
+            hash = hashString.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        // Converte o hash em uma cor HEX
+        let color = '#';
+        for (let i = 0; i < 3; i++) {
+            const value = (hash >> (i * 8)) & 0xFF;
+            // Ajusta para evitar cores muito claras ou muito escuras
+            const adjustedValue = 80 + (value % 120); // Range entre 80-200 para cada componente
+            color += ('00' + adjustedValue.toString(16)).substr(-2);
+        }
+        
+        // Armazena a cor atribuída
+        this.assignedColors[process.name] = color;
+        
+        return color;
+    }
   
     getProcessStateChanges(process) {
       if (!process.stateHistory || process.stateHistory.length === 0) return [];
@@ -340,6 +407,7 @@ class Process {
       this.waitingQueue = [];
       this.executionQueue = [];
       this.allProcesses = [];
+      this.assignedColors = {};
       this.currentTime = 0;
       this.completedTasks = 0;
       this.totalWaitingTime = 0;
@@ -437,7 +505,7 @@ class Process {
       if (this.executionQueue.length === 0) return;
   
       const currentProcess = this.executionQueue[0];
-      const result = currentProcess.execute(100, this.currentTime);
+      const result = currentProcess.execute(100);
   
       if (result === 'io') {
         // Processo precisa fazer I/O
@@ -448,6 +516,9 @@ class Process {
         this.logStateTransition(currentProcess, 'running', 'waiting');
       } else if (result === 'completed') {
         // Processo concluído
+        
+        // Add this line to ensure the running->completed transition is captured:
+        currentProcess.recordState('running', this.currentTime - 1); 
         currentProcess.recordState('completed', this.currentTime);
         this.completedTasks++;
         this.totalWaitingTime += currentProcess.waitingTime;
@@ -472,7 +543,7 @@ class Process {
       };
   
       const transition = {
-        process: process.name,
+        process: (process.name + " - " + process.type),
         from: stateMap[fromState] || fromState,
         to: stateMap[toState] || toState,
         time: this.currentTime,
@@ -525,7 +596,6 @@ class Process {
       const types = {
         'cpu': 'CPU-bound',
         'io': 'I/O-bound',
-        'interactive': 'Interativo'
       };
       return types[type] || type;
     }
