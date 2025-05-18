@@ -88,6 +88,9 @@ class Process {
       this.stateTransitions = [];
       this.stateChart = null;
       this.selectedProcess = null;
+      this.baseTickInterval = 500; // Base speed (500ms per tick)
+      this.speed = 1;
+      this.nextTickTime = 0;
 
       // Mapa de cores para processos repetidos
       this.processColors = {
@@ -105,6 +108,13 @@ class Process {
       document.getElementById('processForm').addEventListener('submit', (e) => {
         e.preventDefault();
         this.createProcess();
+      });
+
+      document.getElementById('speedSelect').addEventListener('change', (e) => {
+        this.setSpeed(e.target.value);
+        document.querySelectorAll('#speedSelect option').forEach(opt => {
+          opt.selected = opt.value === e.target.value;
+        });
       });
   
       document.getElementById('startBtn').addEventListener('click', () => this.start());
@@ -389,9 +399,9 @@ class Process {
     }
   
     start() {
-      if (!this.running && (this.readyQueue.length + this.waitingQueue.length > 0 || this.allProcesses.length === 0)) {
+      if (!this.running) {
         this.running = true;
-        this.startTime = Date.now();
+        this.nextTickTime = Date.now(); // Reset timing on start
         this.scheduleTick();
       }
     }
@@ -420,12 +430,20 @@ class Process {
       if (!this.running) return;
       
       // Ajusta a velocidade da simulação baseado no número de processos
-      const speedFactor = Math.max(100, 500 - (this.allProcesses.length * 20));
+      clearTimeout(this.interval); // Always clear previous timeout
+        
+      const now = Date.now();
+      const adjustedInterval = this.baseTickInterval / this.speed;
+      
+      // Calculate when the next tick should happen
+      this.nextTickTime = Math.max(now, (this.nextTickTime || now) + adjustedInterval);
+      
+      const delay = Math.max(0, this.nextTickTime - now);
       
       this.interval = setTimeout(() => {
-        this.tick();
-        this.scheduleTick();
-      }, speedFactor);
+          this.tick();
+          this.scheduleTick();
+      }, delay);
     }
   
     tick() {
@@ -650,6 +668,10 @@ class Process {
           this.stateChart.update();
         }
       }
+
+    setSpeed(speed) {
+        this.speed = parseFloat(speed);
+    }
   }
   
   window.onload = () => {
