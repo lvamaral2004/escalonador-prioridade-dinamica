@@ -1,529 +1,533 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 :root {
-    --bg-color: #ffffff;
-    --text-color: #000000;
-    --accent-color: #0F2C47;
-    --queue-bg: #f0f0f0;
-    --ready-color: #FFBB00;
-    --waiting-color: #15AF8D;
-    --execution-color: #0248C1;
-    --transition-speed: 0.3s;
-    --tab-active:  #0F2C47;
-    --tab-inactive: #bdc3c7;
-    --modal-bg: rgba(0, 0, 0, 0.5);
-  }
-  
-  body.dark-mode {
-    --bg-color: #121212;
-    --text-color: #ffffff;
-    --accent-color: #2b57a7;
-    --queue-bg: #1e1e1e;
-    --execution-color: #ff7300;
-    --tab-active:  #2b57a7;
-    --tab-inactive: #7f8c8d;
-  }
-  
-  body {
-    margin: 0;
-    font-family: "Poppins", sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    transition: background-color var(--transition-speed), color var(--transition-speed);
-  }
-  
-  header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--accent-color);
-    color: #fff;
-    font-family: "Poppins", sans-serif;
-  }
-  
-  .toggle-mode {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    background-color: var(--queue-bg);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all var(--transition-speed);
-    position: relative;
-  }
-  
-  .toggle-mode .label {
-    transition: opacity var(--transition-speed);
-  }
-  
-  /* Mostra apenas "Modo Escuro" no modo claro */
-  body:not(.dark-mode) .toggle-mode .label:first-child {
-    display: none;
-  }
-  
-  body:not(.dark-mode) .toggle-mode .label:last-child {
-    display: inline;
-  }
-  
-  /* Mostra apenas "Modo Claro" no modo escuro */
-  body.dark-mode .toggle-mode .label:first-child {
-    display: inline;
-    color: #ffffff;
-  }
-  
-  body.dark-mode .toggle-mode .label:last-child {
-    display: none;
-    color: #ffffff;
-  }
-  
-  /* Efeito hover */
-  .toggle-mode:hover {
-    background-color: var(--accent-color);
-    color: white;
-  }
-  
-  /* Tooltip */
-  .toggle-mode::after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--text-color);
-    color: var(--bg-color);
-    padding: 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    white-space: nowrap;
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --accent-color: #0F2C47;
+  --queue-bg: #f0f0f0;
+  --ready-color: #FFBB00;
+  --waiting-color: #15AF8D;
+  --execution-color: #0248C1;
+  --transition-speed: 0.3s;
+  --tab-active: #0F2C47;
+  --tab-inactive: #bdc3c7;
+  --modal-bg: rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --accent-color: #2b57a7;
+  --queue-bg: #1e1e1e;
+  --execution-color: #ff7300;
+  --tab-active: #2b57a7;
+  --tab-inactive: #7f8c8d;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--accent-color);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+.toggle-mode {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: var(--queue-bg);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all var(--transition-speed);
+  position: relative;
+}
+
+.toggle-mode .label {
+  transition: opacity var(--transition-speed);
+}
+
+/* Mostra apenas "Modo Escuro" no modo claro */
+body:not(.dark-mode) .toggle-mode .label:first-child {
+  display: none;
+}
+
+body:not(.dark-mode) .toggle-mode .label:last-child {
+  display: inline;
+}
+
+/* Mostra apenas "Modo Claro" no modo escuro */
+body.dark-mode .toggle-mode .label:first-child {
+  display: inline;
+  color: #ffffff;
+}
+
+body.dark-mode .toggle-mode .label:last-child {
+  display: none;
+  color: #ffffff;
+}
+
+/* Efeito hover */
+.toggle-mode:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.toggle-mode:hover::after {
+  opacity: 1;
+}
+
+.tabs {
+  display: flex;
+  background-color: var(--queue-bg);
+  padding: 0;
+  margin: 0;
+}
+
+.tab {
+  padding: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-color);
+  border-bottom: 3px solid transparent;
+  transition: all var(--transition-speed);
+}
+
+.tab.active {
+  border-bottom-color: var(--accent-color);
+  background-color: var(--bg-color);
+  font-weight: bold;
+}
+
+.tab-content {
+  display: none;
+  padding: 1rem;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+main {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.controls form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.controls form input,
+.controls form select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  flex-grow: 1;
+  min-width: 120px;
+}
+
+.controls .buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.controls .buttons button,
+.controls form button {
+  padding: 0.5rem 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-speed);
+}
+
+.controls .buttons button:hover,
+.controls form button:hover {
+  background-color: #2980b9;
+}
+
+.simulation-controls {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.simulation-controls label {
+  white-space: nowrap;
+}
+
+.simulation-controls input {
+  padding: 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 60px;
+}
+
+.speed-controls label {
+  margin-right: 0.3rem;
+}
+
+.speed-controls select {
+  padding: 0.3rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 60px;
+}
+
+.queues-and-chart {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.queues {
+  display: flex;
+  gap: 1rem;
+  width: 60%;
+}
+
+.chart-container {
+  width: 40%;
+  background-color: var(--queue-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  height: 300px;
+}
+
+.queue {
+  background-color: var(--queue-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  width: 33%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: all var(--transition-speed);
+}
+
+.queue h2 {
+  text-align: center;
+  margin-top: 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.queue h2 .count {
+  background-color: var(--accent-color);
+  color: white;
+  padding: 0 0.5rem;
+  border-radius: 10px;
+  font-size: 0.8em;
+}
+
+#readyQueue h2 {
+  color: var(--ready-color);
+}
+
+#waitingQueue h2 {
+  color: var(--waiting-color);
+}
+
+#executionQueue h2 {
+  color: var(--execution-color);
+}
+
+.process-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  min-height: 150px;
+  transition: all var(--transition-speed);
+}
+
+.process-item {
+  padding: 0.5rem;
+  border-radius: 4px;
+  color: #000000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.process-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.process-item.ready {
+  background-color: var(--ready-color);
+}
+
+.process-item.waiting {
+  background-color: var(--waiting-color);
+}
+
+.process-item.running {
+  background-color: var(--execution-color);
+  transform: scale(1.02);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.process-item.completed {
+  background-color: var(--completed-color);
+}
+
+.process-item .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.metrics-and-transitions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 40%;
+}
+
+.process-states {
+  width: 60%;
+}
+
+.metric {
+  background-color: var(--queue-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  min-width: 150px;
+  text-align: center;
+  flex-grow: 1;
+}
+
+.metric p {
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.metric span {
+  font-size: 1.2em;
+}
+
+.process-states {
+  background-color: var(--queue-bg);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.state-transitions {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.state-transition {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  justify-content: space-between;
+}
+
+.state-transition:last-child {
+  border-bottom: none;
+}
+
+.state-transition .time {
+  color: #777;
+  font-size: 0.8em;
+}
+
+.info-card {
+  background-color: var(--queue-bg);
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 14px;
+}
+
+.info-card h2 {
+  margin-top: 0;
+  color: var(--accent-color);
+}
+
+.info-card h3 {
+  margin-top: 1.5rem;
+}
+
+.concept {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--modal-bg);
+}
+
+#priorityModal {
+  z-index: 101;
+  /* Above the mass edit modal */
+}
+
+.modal-content {
+  background-color: var(--bg-color);
+  margin: 15% auto;
+  padding: 1.5rem;
+  border-radius: 8px;
+  width: 300px;
+  position: relative;
+  z-index: 1;
+}
+
+.close {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-body input {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.modal-body button {
+  padding: 0.5rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.process-edit-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 15px;
+}
+
+.process-edit-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.process-edit-item:hover {
+  background-color: #f5f5f5;
+}
+
+.modal-footer {
+  margin-top: 20px;
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from {
     opacity: 0;
-    transition: opacity 0.3s;
-    pointer-events: none;
+    transform: translateY(10px);
   }
-  
-  .toggle-mode:hover::after {
+
+  to {
     opacity: 1;
+    transform: translateY(0);
   }
-  
-  .tabs {
-    display: flex;
-    background-color: var(--queue-bg);
-    padding: 0;
-    margin: 0;
-  }
-  
-  .tab {
-    padding: 1rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    color: var(--text-color);
-    border-bottom: 3px solid transparent;
-    transition: all var(--transition-speed);
-  }
-  
-  .tab.active {
-    border-bottom-color: var(--accent-color);
-    background-color: var(--bg-color);
-    font-weight: bold;
-  }
-  
-  .tab-content {
-    display: none;
-    padding: 1rem;
-  }
-  
-  .tab-content.active {
-    display: block;
-  }
-  
-  main {
-    padding: 1rem;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-  
-  .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  
-  .controls form {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-  
-  .controls form input, 
-  .controls form select {
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    flex-grow: 1;
-    min-width: 120px;
-  }
-  
-  .controls .buttons {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .controls .buttons button,
-  .controls form button {
-    padding: 0.5rem 1rem;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color var(--transition-speed);
-  }
-  
-  .controls .buttons button:hover,
-  .controls form button:hover {
-    background-color: #2980b9;
-  }
-  
-  .simulation-controls {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  
-  .simulation-controls label {
-    white-space: nowrap;
-  }
-  
-  .simulation-controls input {
-    padding: 0.3rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    width: 60px;
-  }
-  
+}
+
+.process-item {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@media (max-width: 1200px) {
   .queues-and-chart {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
+    flex-direction: column;
   }
-  
-  .queues {
-    display: flex;
-    gap: 1rem;
-    width: 60%;
-  }
-  
+
+  .queues,
   .chart-container {
-    width: 40%;
-    background-color: var(--queue-bg);
-    padding: 1rem;
-    border-radius: 8px;
-    height: 300px;
-  }
-  
-  .queue {
-    background-color: var(--queue-bg);
-    padding: 1rem;
-    border-radius: 8px;
-    width: 33%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    transition: all var(--transition-speed);
-  }
-  
-  .queue h2 {
-    text-align: center;
-    margin-top: 0;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .queue h2 .count {
-    background-color: var(--accent-color);
-    color: white;
-    padding: 0 0.5rem;
-    border-radius: 10px;
-    font-size: 0.8em;
-  }
-  
-  #readyQueue h2 {
-    color: var(--ready-color);
-  }
-  
-  #waitingQueue h2 {
-    color: var(--waiting-color);
-  }
-  
-  #executionQueue h2 {
-    color: var(--execution-color);
-  }
-  
-  .process-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    min-height: 150px;
-    transition: all var(--transition-speed);
-  }
-
-  .process-item {
-    padding: 0.5rem;
-    border-radius: 4px;
-    color: #000000;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-  }
-  
-  .process-item::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: rgba(255,255,255,0.2);
-  }
-  
-  .process-item.ready {
-    background-color: var(--ready-color);
-  }
-  
-  .process-item.waiting {
-    background-color: var(--waiting-color);
-  }
-  
-  .process-item.running {
-    background-color: var(--execution-color);
-    transform: scale(1.02);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  }
-  
-  .process-item.completed {
-    background-color: var(--completed-color);
-  }
-  
-  .process-item .progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    background-color: rgba(255,255,255,0.5);
-  }
-  
-  .metrics-and-transitions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-  
-  .metrics {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    width: 40%;
-  }
-  
-  .process-states {
-    width: 60%;
-  }
-  
-  .metric {
-    background-color: var(--queue-bg);
-    padding: 1rem;
-    border-radius: 8px;
-    min-width: 150px;
-    text-align: center;
-    flex-grow: 1;
-  }
-  
-  .metric p {
-    margin: 0 0 0.5rem 0;
-    font-weight: bold;
-  }
-  
-  .metric span {
-    font-size: 1.2em;
-  }
-  
-  .process-states {
-    background-color: var(--queue-bg);
-    padding: 1rem;
-    border-radius: 8px;
-  }
-  
-  .state-transitions {
-    max-height: 200px;
-    overflow-y: auto;
-    margin-top: 1rem;
-  }
-  
-  .state-transition {
-    padding: 0.5rem;
-    border-bottom: 1px solid #ccc;
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .state-transition:last-child {
-    border-bottom: none;
-  }
-  
-  .state-transition .time {
-    color: #777;
-    font-size: 0.8em;
-  }
-  
-  .info-card {
-    background-color: var(--queue-bg);
-    padding: 1.5rem;
-    border-radius: 8px;
-    max-width: 800px;
-    margin: 0 auto;
-  }
-  
-  .info-card h2 {
-    margin-top: 0;
-    color: var(--accent-color);
-  }
-  
-  .info-card h3 {
-    margin-top: 1.5rem;
-  }
-  
-  .concept {
-    background-color: rgba(0,0,0,0.1);
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    margin: 1rem 0;
-  }
-  
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 100;
-    left: 0;
-    top: 0;
     width: 100%;
-    height: 100%;
-    background-color: var(--modal-bg);
   }
+}
 
-  #priorityModal {
-    z-index: 101; /* Above the mass edit modal */
-	}
-
-  .modal-content {
-    background-color: var(--bg-color);
-    margin: 15% auto;
-    padding: 1.5rem;
-    border-radius: 8px;
-    width: 300px;
-    position: relative;
-		z-index: 1;
-  }
-  
-  .close {
-    position: absolute;
-    right: 1rem;
-    top: 1rem;
-    font-size: 1.5rem;
-    cursor: pointer;
-  }
-  
-  .modal-body {
-    display: flex;
+@media (max-width: 768px) {
+  .queues {
     flex-direction: column;
-    gap: 1rem;
-  }
-  
-  .modal-body input {
-    padding: 0.5rem;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-  }
-  
-  .modal-body button {
-    padding: 0.5rem;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
   }
 
-  .process-edit-list {
-		max-height: 400px;
-		overflow-y: auto;
-		margin-bottom: 15px;
-	}
+  .queue {
+    width: auto;
+  }
 
-	.process-edit-item {
-		padding: 10px;
-		border-bottom: 1px solid #eee;
-		cursor: pointer;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
+  .controls form {
+    flex-direction: column;
+  }
 
-	.process-edit-item:hover {
-		background-color: #f5f5f5;
-	}
+  .metrics-and-transitions {
+    flex-direction: column;
+  }
 
-	.modal-footer {
-		margin-top: 20px;
-		text-align: right;
-	}
-  
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  .metrics,
+  .process-states {
+    width: auto;
   }
-  
-  .process-item {
-    animation: fadeIn 0.3s ease-out;
-  }
-  
-  @media (max-width: 1200px) {
-    .queues-and-chart {
-      flex-direction: column;
-    }
-    
-    .queues, .chart-container {
-      width: 100%;
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .queues {
-      flex-direction: column;
-    }
-    
-    .queue {
-      width: auto;
-    }
-    
-    .controls form {
-      flex-direction: column;
-    }
-    
-    .metrics-and-transitions {
-      flex-direction: column;
-    }
-    
-    .metrics, .process-states {
-      width: auto;
-    }
-  }
+}
