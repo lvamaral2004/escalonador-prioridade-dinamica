@@ -73,6 +73,10 @@ class Processo {
           this.proximoTempoIO = this.intervaloIO;
           return 'io'; // Sinaliza que precisa fazer I/O
         }
+
+        if (this.tempoRestante < 10) {
+          this.tempoRestante = 0
+        }
       }
       
       return this.tempoRestante <= 0 ? 'completed' : 'running';
