@@ -54,7 +54,7 @@ class Processo {
       }
       
       // Define a nova prioridade
-      this.prioridadeDinamica = Math.max(1, Math.min(10, this.prioridadeOriginal + mudancaPrioridade));
+      this.prioridadeDinamica = Math.max(1, Math.min(10, mudancaPrioridade));
     }
   
     // Executa o processo por um time slice e retorna:

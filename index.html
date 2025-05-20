@@ -274,10 +274,14 @@
 
       // 5. Gerar e baixar o PDF
       const opt = {
-        margin: 0.5,
+        margin: 0.2,
         filename: 'relatorio_simulacao.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
+        html2canvas: {
+          scale: 3,
+          scrollY: 0,
+          windowHeight: 3000
+        },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
 
