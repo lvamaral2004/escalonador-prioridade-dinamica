@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Simulador de Escalonamento por Prioridade Dinâmica</title>
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
   <header>
     <h1>Simulador de Escalonamento por Prioridade Dinâmica</h1>
     <button id="toggleMode" class="toggle-mode">
-        <span class="label">Modo Claro</span>
-        <span class="label">Modo Escuro</span>
+      <span class="label">Modo Claro</span>
+      <span class="label">Modo Escuro</span>
     </button>
   </header>
 
@@ -34,15 +36,16 @@
             <option value="io">I/O-bound</option>
           </select>
           <input type="number" id="priority" placeholder="Prioridade (1-10)" min="1" max="10" required />
-          <input type="number" id="executionTime" placeholder="Tempo de Execução (ms)" min="100" max="600000" required />
+          <input type="number" id="executionTime" placeholder="Tempo de Execução (ms)" min="100" max="600000"
+            required />
           <button type="submit">Adicionar Processo</button>
         </form>
         <div class="buttons">
           <button id="startBtn">Iniciar</button>
           <button id="pauseBtn">Pausar</button>
           <button id="resetBtn">Resetar</button>
+          <button id="massEditBtn">Editar Prioridade</button>
           <button id="downloadBtnPdf" style="display: none;" onclick="downloadReport()">Baixar Relatório</button>
-          <button id="massEditBtn">Editar Prioridades</button>
         </div>
         <div class="simulation-controls">
           <label for="timeQuantum">Quantum (ms):</label>
@@ -51,13 +54,13 @@
           <input type="number" id="agingFactor" value="5" min="1" max="10">
 
           <div class="speed-controls">
-              <label>Velocidade:</label>
-              <select id="speedSelect">
-                  <option value="0.5">0.5x</option>
-                  <option value="1" selected>1x</option>
-                  <option value="2">2x</option>
-                  <option value="4">4x</option>
-              </select>
+            <label>Velocidade:</label>
+            <select id="speedSelect">
+              <option value="0.5">0.5x</option>
+              <option value="1" selected>1x</option>
+              <option value="2">2x</option>
+              <option value="4">4x</option>
+            </select>
           </div>
         </div>
       </div>
@@ -113,16 +116,17 @@
     <section id="about" class="tab-content">
       <div class="info-card">
         <h2>Sobre o Simulador</h2>
-        <p>Este simulador foi desenvolvido para demonstrar visualmente como funciona um escalonador de processos com prioridade dinâmica em sistemas operacionais.</p>
+        <p>Este simulador foi desenvolvido para demonstrar visualmente como funciona um escalonador de processos com
+          prioridade dinâmica em sistemas operacionais.</p>
         <h3>Objetivo</h3>
-        <p>Nosso objetivo é facilitar o entendimento de conceitos complexos de escalonamento de processos através de visualizações interativas e intuitivas.</p>
-        
+        <p>Nosso objetivo é facilitar o entendimento de conceitos complexos de escalonamento de processos através de
+          visualizações interativas e intuitivas.</p>
+
         <h3>Tecnologias utilizadas</h3>
         <ul>
-          <li>HTML5, CSS3 e JavaScript</li>
+          <li>HTML, CSS e JavaScript</li>
           <li>Chart.js para visualização de dados</li>
           <li>html2pdf.js para a geração do PDF</li>
-          <li>Algoritmos de escalonamento realistas</li>
         </ul>
       </div>
     </section>
@@ -130,51 +134,81 @@
     <section id="help" class="tab-content">
       <div class="info-card">
         <h2>Ajuda e Suporte</h2>
-        
+
         <h3>Como usar o simulador</h3>
         <ol>
-          <li><strong>Adicione processos:</strong> Preencha o formulário com nome, tipo, prioridade e tempo de execução.</li>
+          <li><strong>Adicione processos:</strong> Preencha o formulário com nome, tipo, prioridade e tempo de execução.
+          </li>
           <li><strong>Ajuste os parâmetros:</strong> Defina o quantum e fator de aging conforme necessário.</li>
           <li><strong>Inicie a simulação:</strong> Clique no botão "Iniciar" para começar a execução.</li>
-          <li><strong>Observe as transições:</strong> Os processos mudarão entre os estados Pronto, Execução e Espera.</li>
-          <li><strong>Analise os resultados:</strong> Veja as métricas e o gráfico para entender o comportamento do escalonador.</li>
-          <li><strong>Relatório de dados: Caso necessite, poderá exportar para PDF as informações ao fim da execução.</strong></li>
+          <li><strong>Observe as transições:</strong> Os processos mudarão entre os estados Pronto, Execução e Espera.
+          </li>
+          <li><strong>Analise os resultados:</strong> Veja as métricas e o gráfico para entender o comportamento do
+            escalonador.</li>
+          <li><strong>Relatório de dados:</strong> Caso necessite, poderá exportar para PDF as informações ao
+            fim da execução por meio do botão "Baixar Relatório".</li>
         </ol>
-        
-        <h3>Conceitos explicados</h3>
-        <div class="concept">
-          <h4>Quantum (Time Slice)</h4>
-          <p>O intervalo de tempo máximo que um processo pode executar continuamente na CPU antes de ser interrompido para reavaliação do escalonador.</p>
-        </div>
 
+        <h3>Conceitos e funcionalidades explicados</h3>
         <div class="concept">
           <h4>Prioridade Dinâmica</h4>
-          <p>A prioridade dos processos muda durante a execução baseada em fatores como tempo de espera e uso de CPU.</p>
-        </div>
-        
-        <div class="concept">
-          <h4>Aging</h4>
-          <p>Processos que esperam muito tempo têm sua prioridade aumentada para evitar starvation (inanição).</p>
+          <p>A prioridade dos processos muda durante a execução baseada em fatores como tempo de espera e uso de CPU.
+          </p>
         </div>
 
         <div class="concept">
           <h4>Tipos de Processos</h4>
           <ul>
-            <li><strong>CPU-bound:</strong> Usam muita CPU, prioridade tende a diminuir</li>
-            <li><strong>I/O-bound:</strong> Fazem muitas operações de I/O, prioridade moderada</li>
-            <li><strong>Interativos:</strong> Ganham prioridade rapidamente para melhor responsividade</li>
+            <li><strong>CPU-bound:</strong> Demandam intensivamente o uso da CPU. Como tendem a monopolizar o
+              processador por longos períodos,
+              sua prioridade pode ser reduzida pelo escalonador como forma de evitar a sobrecarga e garantir uma
+              distribuição mais justa dos
+              recursos entre todos os processos</li>
+            <li><strong>I/O-bound:</strong> Realizam com frequência operações de entrada e saída (I/O), como leitura de
+              arquivos ou comunicação
+              com dispositivos externos. Por passarem boa parte do tempo aguardando a conclusão dessas operações, eles
+              permanecem mais tempo na
+              fila de espera, o que pode resultar em ganho de prioridade."</li>
           </ul>
-
         </div>
 
-                <div class="concept">
-          <h4>Throughput (Taxa de Transferência)</h4>
-          <p>Medida de desempenho que indica quantos processos são concluídos por segundo. É afetado pela proporção de processos CPU-bound/I/O-bound e pela configuração do quantum.</p>
+        <div class="concept">
+          <h4> Fator de Aging (Envelhecimento)</h4>
+          <p>Trata-se de uma técnica de recompensa para processos que permanecem
+            por muito tempo na fila de espera (I/O). Aumentar esse fator equivale ao ganho rápido de prioridade desses
+            processos, evitando que fiquem indefinidamente aguardando execução. Por outro lado, um fator baixo torna
+            os processos mais suscetíveis à inanição, ou seja, eles não são devidamente
+            compensados pelo longo tempo de espera e podem acabar nunca sendo executados.</p>
         </div>
-        
+
+        <div class="concept">
+          <h4>Quantum</h4>
+          <p>O quantum representa o intervalo de tempo máximo que um processo pode ocupar a CPU antes de ser
+            interrompido para dar lugar a outro
+            processo. Quanto menor o quantum, maior a alternância entre os processos, porém visualmente, nesse
+            simulador, pode gerar conflito.
+            Ao contrário disso, um quantum muito grande pode causar longos tempos de espera para os demais processos,
+            reduzindo a equidade na
+            distribuição da CPU.</p>
+        </div>
+
+        <div class="concept">
+          <h4>Editar prioridade</h4>
+          <p>O sistema já atualiza a prioridade automaticamente à medida que a simulação avança. No entanto, também é
+            possível reajustar esse valor
+            manualmente, tanto antes da inicialização do escalonador quanto durante sua execução, através do botão
+            "Editar Prioridade".
+          </p>
+        </div>
+
         <h3>Suporte</h3>
-        <p>Para dúvidas ou sugestões, entre em contato conosco através 
-          dos e-mails: livia.amaral@unifesspa.edu.br e pedro.arnaldo@unifesspa.edu.br</p>
+        <p>Para dúvidas ou sugestões, entre em contato conosco através
+          dos e-mails: <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=livia.amaral@unifesspa.edu.br">livia.amaral@unifesspa.edu.br</a>
+          e
+          <a href="https://mail.google.com/mail/?view=cm&fs=1&to=pedro.arnaldo@unifesspa.edu.br"
+            target="_blank">pedro.arnaldo@unifesspa.edu.br</a>
+        </p>
       </div>
     </section>
   </main>
@@ -225,7 +259,7 @@
       title.style.textAlign = 'center';
       title.style.marginBottom = '20px';
       pdfContainer.appendChild(title);
-    
+
       // 3. Inserir imagem no topo
       const img = document.createElement('img');
       img.src = chartImage;
@@ -252,4 +286,5 @@
   </script>
 
 </body>
+
 </html>
